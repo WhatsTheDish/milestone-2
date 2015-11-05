@@ -37,14 +37,13 @@ var db = new sqlite3.Database(file);
 db.serialize(function() {
   if(!exists) {
     //db.run("CREATE TABLE Stuff (thing TEXT)");
-    db.run("CREATE TABLE users(userName TEXT, allergicToMilk boolean, allergicToPeanuts boolean)");
+    db.run("CREATE TABLE users(userName TEXT primary key, allergicToMilk boolean, allergicToPeanuts boolean)");
   }
   
   //var stmt = db.prepare("INSERT INTO Stuff VALUES (?)");
   //var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
   //stmt.run('Bob420', false, false);
-
-  stmt.finalize();
+  //stmt.finalize();
  
   db.each("SELECT rowid AS id, userName, allergicToMilk, allergicToPeanuts FROM users", function(err, row) {
   console.log(row.id + ": " + row.userName + " " + row.allergicToMilk + " " + row.allergicToPeanuts);
@@ -121,9 +120,17 @@ app.post('/users', function (req, res) {
   // otherwise add the user to the database by pushing (appending)
   // postBody to the fakeDatabase list
   var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
-  stmt.run(postBody.name, false, false);
-
-  res.send('OK');
+  stmt.run(postBody.name, false, false, function(error){
+    if(error){
+      console.log(error.message);
+      res.send('DUPLICATE');
+    }
+    else{
+      res.send('OK');
+    }
+  }
+  );
+  
 });
 
 

@@ -7,11 +7,12 @@
 // Prerequisites - first run:
 //   npm install express
 //   npm install body-parser
+//   npm install sqlite3
 //
 // then run:
 //   node server.js
 //
-// and the frontend can be viewed at http://localhost:3000/fakebook.html
+// and the frontend can be viewed at http://localhost:3000/createaccount.html
 
 var express = require('express');
 var app = express();

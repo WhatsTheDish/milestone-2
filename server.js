@@ -38,7 +38,7 @@ var db = new sqlite3.Database(file);
 db.serialize(function() {
   if(!exists) {
     //db.run("CREATE TABLE Stuff (thing TEXT)");
-    db.run("CREATE TABLE users(userName TEXT primary key, allergicToMilk boolean, allergicToPeanuts boolean)");
+    db.run("CREATE TABLE users(userName TEXT primary key, allergicToMilk BOOLEAN, allergicToPeanuts BOOLEAN)");
   }
   
   //var stmt = db.prepare("INSERT INTO Stuff VALUES (?)");
@@ -102,6 +102,10 @@ $ curl -X GET http://localhost:3000/users/Carol
 app.post('/users', function (req, res) {
   var postBody = req.body;
   var myName = postBody.name;
+  var allergicToPeanuts = postBody.allergicToPeanuts;
+  var allergicToMilk = postBody.allergicToPeanuts;
+
+  console.log(postBody);
   console.log(myName);
   // must have a name!
   if (!myName) {
@@ -121,7 +125,7 @@ app.post('/users', function (req, res) {
   // otherwise add the user to the database by pushing (appending)
   // postBody to the fakeDatabase list
   var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
-  stmt.run(postBody.name, false, false, function(error){
+  stmt.run(postBody.name, function(error){
     if(error){
       console.log(error.message);
       res.send('DUPLICATE');

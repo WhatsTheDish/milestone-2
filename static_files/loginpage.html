@@ -30,35 +30,33 @@ $(document).ready(function() {
   });
 
 
-  $("#createButton").click(function() {
+  $("#loginButton").click(function() {
+    console.log($("#nameBox").val());
+    // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
+    // Using the core $.ajax() method
     $.ajax({
       // The URL for the request -- note the simple REST API!
       // all URLs are relative to http://localhost:3000/
-      url: "users/",
-      type: "POST",
-      dataType : "text", // this URL returns a plain text string, not JSON
-
-      data : { name: $("#nameBox").val()
-             },
+      url: "users/" + $("#nameBox").val(),
+      type: "GET",
+      dataType : "JSON", // this URL returns data in JSON format
 
       success: function( data ) {
         console.log("You received some data!", data);
-        if (data == 'OK') {
-          $("#status").html("Successfully created a new user!");
-          //got this part from http://stackoverflow.com/questions/17150171/page-redirect-after-x-seconds-wait-using-javascript
 
-          /*
-          window.setTimeout(function () {
-            location.href = "http://localhost:3000/loggedin.html?userName" + $("#nameBox").val();
-          }, 1000);
-          */
-          
-        } 
-        else {
-          $("#status").html("Error: could not create a new user or user already exists!");
+        if (data.userName) {
+          $("#nameDiv").html("UserName: " + data.userName);
+          //$("#ageDiv").html("My job is " + data.job);
+          //$("#profileImage").attr("src", data.pet);
+        }  
+        if(data == null){
+          $("#status").html("Error: could not find user!");
+          // clear the profile display
+          $("#nameDiv").html("");
+          //$("#ageDiv").html("");
+          //$("#profileImage").attr("src", "");
         }
       },
-
     });
   });
 });
@@ -68,14 +66,14 @@ $(document).ready(function() {
 </head>
   <body>
   <h1>Welcome to What's The Dish!</h1>
-  <h2>Create Account: <h2>
+  <h2>Log in: <h2>
 
     <p>
     UserName: <input id="nameBox" type="text" size="10"/>
     </p>
 
     <p>
-    <button id="createButton">Create new user</button>
+    <button id="loginButton">Log me in</button>
     </p>
 
     <!-- empty placeholders -->

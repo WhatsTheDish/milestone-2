@@ -39,12 +39,7 @@ db.serialize(function() {
     //db.run("CREATE TABLE Stuff (thing TEXT)");
     db.run("CREATE TABLE users(userName TEXT primary key, allergicToMilk boolean, allergicToPeanuts boolean)");
   }
-  
-  //var stmt = db.prepare("INSERT INTO Stuff VALUES (?)");
-  //var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
-  //stmt.run('Bob420', false, false);
-  //stmt.finalize();
- 
+
   db.each("SELECT rowid AS id, userName, allergicToMilk, allergicToPeanuts FROM users", function(err, row) {
   console.log(row.id + ": " + row.userName + " " + row.allergicToMilk + " " + row.allergicToPeanuts);
   });
@@ -107,18 +102,6 @@ app.post('/users', function (req, res) {
     res.send('ERROR');
     return; // return early!
   }
-  /*
-  // check if user's name is already in database; if so, send an error
-  for (var i = 0; i < db.length; i++) {
-    var e = db[i];
-    if (e.userName == myName) {
-      res.send('ERROR');
-      return; // return early!
-    }
-  }
-  */
-  // otherwise add the user to the database by pushing (appending)
-  // postBody to the fakeDatabase list
   var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
   stmt.run(postBody.name, false, false, function(error){
     if(error){
@@ -129,10 +112,8 @@ app.post('/users', function (req, res) {
       res.send('OK');
     }
   }
-  );
-  
+  );  
 });
-
 
 // READ profile data for a user
 //
@@ -140,8 +121,48 @@ app.post('/users', function (req, res) {
 //   curl -X GET http://localhost:3000/users/Philip
 //   curl -X GET http://localhost:3000/users/Jane
 app.get('/users/*', function (req, res) {
-  var nameToLookup = req.params[0]; // this matches the '*' part of '/users/*' above
+  //var nameToLookup = req.;
+  //console.log(nameToLookUp);
+   // this matches the '*' part of '/users/*' above
   // try to look up in fakeDatabase
+  //var postBody = req.body;
+  //console.log(postBody);
+  var nameToLookup = req.params[0];
+  console.log(nameToLookup);
+  console.log(nameToLookup);
+  db.each("SELECT rowid AS id, userName FROM users", function(err, row) {
+    console.log(row.id + ": " + row.userName);
+    console.log("EACHCALL");
+    if(nameToLookup == row.userName){
+      console.log("YUP!");
+      res.send(row);
+      return;
+    }
+  });
+  //console.log("BOO");
+  //res.send('{}');
+
+   // failed, so return an empty JSON object!
+  /*
+  db.each("SELECT rowid AS id, userName FROM users", function(row, err) {
+    var e = row.userName;
+    if (e == nameToLookup) {
+      res.send(e);
+    }
+  });
+*/
+  
+
+  /*
+  function eachRow(row) {
+  //console.log(row.id + ": " + row.info);
+  var e = row.userName;
+  if (e == nameToLookup) {
+    res.send(e);
+  }
+  */
+
+  /*
   for (var i = 0; i < fakeDatabase.length; i++) {
     var e = fakeDatabase[i];
     if (e.name == nameToLookup) {
@@ -149,11 +170,25 @@ app.get('/users/*', function (req, res) {
       return; // return early!
     }
   }
+  */
 
-  res.send('{}'); // failed, so return an empty JSON object!
+  /*
+  var stmt = db.prepare("INSERT INTO users VALUES(?, ?, ?)");
+  stmt.run(nameToLookup, false, false, function(error){
+    if(error){
+      console.log(error.message);
+      res.send('OK');
+    }
+    else{
+      res.send('ERROR');
+    }
+  }
+  );
+  */
+ 
 });
 
-
+/*
 // READ a list of all usernames (note that there's no '*' at the end)
 //
 // To test with curl, run:
@@ -168,7 +203,7 @@ app.get('/users', function (req, res) {
 
   res.send(allUsernames);
 });
-
+*/
 
 // UPDATE a user's profile with the data given in POST
 //
@@ -191,7 +226,6 @@ app.put('/users/*', function (req, res) {
       return; // return early!
     }
   }
-
   res.send('ERROR'); // nobody in the database matches nameToLookup
 });
 
